@@ -43,7 +43,7 @@ rd /s /q %LUA_UE4_DIR%
 
 @REM change source
 cd src
-powershell -Command "(type 'luaconf.h') -replace ('define LUA_IDSIZE','define LUA_IDSIZE    256  // ')|out-file luaconf.h"
+powershell -Command "(Get-Content 'luaconf.h') -replace ('define LUA_IDSIZE','define LUA_IDSIZE    256  // ')| Set-Content luaconf.h"
 
 cd ..
 
