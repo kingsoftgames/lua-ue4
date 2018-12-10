@@ -52,7 +52,10 @@ mkdir -p ${LUA_UE4_PREFIX}/IOS/lib
 
 cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/IOS . -G "Xcode"
 
-xcodebuild -project "lua.xcodeproj" -target "lua_static" -configuration Release -sdk iphoneos -jobs ${CORE_COUNT} -arch arm64 build
+xcodebuild -project "lua.xcodeproj" -target "lua_static"\
+    -configuration Release -sdk iphoneos\
+    IPHONEOS_DEPLOYMENT_TARGET=$LUA_UE4_IOS_DEPLOYMENT_TARGET\
+    -jobs ${CORE_COUNT} -arch arm64 build
 xcodebuild -target install build
 
 rm -rf ${LUA_UE4_PREFIX}/IOS/bin

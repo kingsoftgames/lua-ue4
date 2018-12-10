@@ -49,7 +49,7 @@ cd ..
 rm -rf $LUA_UE4_PREFIX
 mkdir -p $LUA_UE4_PREFIX
 
-cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/mac . -G "Xcode"
+cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/mac -DCMAKE_OSX_DEPLOYMENT_TARGET=$LUA_UE4_MAC_DEPLOYMENT_TARGET . -G "Xcode"
 xcodebuild -project "lua.xcodeproj" -target "ALL_BUILD" -configuration Release -jobs ${CORE_COUNT} build
 xcodebuild -target install build
 
