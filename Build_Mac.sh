@@ -32,6 +32,13 @@ else
     echo "LUA_UE4_PREFIX: $LUA_UE4_PREFIX"
 fi
 
+if [ -z "${LUA_UE4_MACOS_DEPLOYMENT_TARGET}" ]; then
+    echo "LUA_UE4_MACOS_DEPLOYMENT_TARGET is not set, exit."
+    exit 1
+else
+    echo "LUA_UE4_MACOS_DEPLOYMENT_TARGET: $LUA_UE4_MACOS_DEPLOYMENT_TARGET"
+fi
+
 LUA_UE4_URL=http://www.lua.org/ftp/lua-${LUA_UE4_VERSION}.tar.gz
 LUA_UE4_DIR=lua-${LUA_UE4_VERSION}
 LUA_UE4_TAR=${LUA_UE4_DIR}.tar.gz
@@ -49,7 +56,7 @@ cd ..
 rm -rf $LUA_UE4_PREFIX
 mkdir -p $LUA_UE4_PREFIX
 
-cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/mac -DCMAKE_OSX_DEPLOYMENT_TARGET=$LUA_UE4_MAC_DEPLOYMENT_TARGET . -G "Xcode"
+cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/mac -DCMAKE_OSX_DEPLOYMENT_TARGET=$LUA_UE4_MACOS_DEPLOYMENT_TARGET . -G "Xcode"
 xcodebuild -project "lua.xcodeproj" -target "ALL_BUILD" -configuration Release -jobs ${CORE_COUNT} build
 xcodebuild -target install build
 

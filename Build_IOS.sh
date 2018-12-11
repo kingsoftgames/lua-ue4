@@ -32,6 +32,13 @@ else
     echo "LUA_UE4_PREFIX: $LUA_UE4_PREFIX"
 fi
 
+if [ -z "${LUA_UE4_IOS_DEPLOYMENT_TARGET}" ]; then
+    echo "LUA_UE4_IOS_DEPLOYMENT_TARGET is not set, exit."
+    exit 1
+else
+    echo "LUA_UE4_IOS_DEPLOYMENT_TARGET: $LUA_UE4_IOS_DEPLOYMENT_TARGET"
+fi
+
 LUA_UE4_URL=http://www.lua.org/ftp/lua-${LUA_UE4_VERSION}.tar.gz
 LUA_UE4_DIR=lua-${LUA_UE4_VERSION}
 LUA_UE4_TAR=${LUA_UE4_DIR}.tar.gz
@@ -52,10 +59,14 @@ mkdir -p ${LUA_UE4_PREFIX}/IOS/lib
 
 cmake -DCMAKE_INSTALL_PREFIX=$LUA_UE4_PREFIX/IOS . -G "Xcode"
 
-xcodebuild -project "lua.xcodeproj" -target "lua_static"\
-    -configuration Release -sdk iphoneos\
-    IPHONEOS_DEPLOYMENT_TARGET=$LUA_UE4_IOS_DEPLOYMENT_TARGET\
-    -jobs ${CORE_COUNT} -arch arm64 build
+xcodebuild -project "lua.xcodeproj"                             \
+  -target "lua_static"                                          \
+  -configuration Release                                        \
+  -sdk iphoneos                                                 \
+  -arch arm64                                                   \
+  IPHONEOS_DEPLOYMENT_TARGET=$LUA_UE4_IOS_DEPLOYMENT_TARGET     \
+  -jobs ${CORE_COUNT}                                           \
+  build
 xcodebuild -target install build
 
 rm -rf ${LUA_UE4_PREFIX}/IOS/bin
