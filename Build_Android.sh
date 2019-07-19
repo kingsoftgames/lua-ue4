@@ -39,6 +39,7 @@ cmake .                                                \
   -DCMAKE_TOOLCHAIN_FILE=android.toolchain.cmake       \
   -DANDROID_NDK="${NDKROOT}"                           \
   -DCMAKE_BUILD_TYPE=Release                           \
-  -DANDROID_ABI="armeabi-v7a"
+  -DANDROID_ABI="arm64-v8a"                            \
+  -DANDROID_NATIVE_API_LEVEL="android-24"
 make
 make install
