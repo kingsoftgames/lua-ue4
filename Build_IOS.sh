@@ -42,15 +42,16 @@ tar zxf ${LUA_UE4_TAR}
 mv ./${LUA_UE4_DIR}/* .
 rm -rf ${LUA_UE4_DIR}
 
-cd src
-change_source
-cd ..
+pushd src
+  change_source
+popd
 
 rm -rf ${LUA_UE4_PREFIX}
 mkdir -p ${LUA_UE4_PREFIX}
-mkdir -p ${LUA_UE4_PREFIX}/IOS/lib
+mkdir -p ${LUA_UE4_PREFIX}/lib
 
-cmake -DCMAKE_INSTALL_PREFIX=${LUA_UE4_PREFIX}/IOS . -G "Xcode"
+cmake -G "Xcode" -DCMAKE_INSTALL_PREFIX="${LUA_UE4_PREFIX}" .
+
 xcodebuild -project "lua.xcodeproj"                             \
   -target "lua_static"                                          \
   -configuration Release                                        \
@@ -59,12 +60,13 @@ xcodebuild -project "lua.xcodeproj"                             \
   IPHONEOS_DEPLOYMENT_TARGET=${LUA_UE4_IOS_DEPLOYMENT_TARGET}   \
   -jobs ${CORE_COUNT}                                           \
   build
+
 xcodebuild -target install build
 
-rm -rf ${LUA_UE4_PREFIX}/IOS/bin
-rm -rf ${LUA_UE4_PREFIX}/IOS/lib/*
+rm -rf ${LUA_UE4_PREFIX}/bin
+rm -rf ${LUA_UE4_PREFIX}/lib/*
 
 mv Release-iphoneos/liblua.a Release-iphoneos/liblua-arm64.a
-lipo -create Release-iphoneos/liblua-arm64.a -output ${LUA_UE4_PREFIX}/IOS/lib/liblua.a
+lipo -create Release-iphoneos/liblua-arm64.a -output ${LUA_UE4_PREFIX}/lib/liblua.a
 
-lipo -info ${LUA_UE4_PREFIX}/IOS/lib/liblua.a
+lipo -info ${LUA_UE4_PREFIX}/lib/liblua.a

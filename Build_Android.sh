@@ -27,15 +27,15 @@ tar zxf ${LUA_UE4_TAR}
 mv ./${LUA_UE4_DIR}/* .
 rm -rf ${LUA_UE4_DIR}
 
-cd src
-change_source
-cd ..
+pushd src
+  change_source
+popd
 
 rm -rf ${LUA_UE4_PREFIX}
 mkdir -p ${LUA_UE4_PREFIX}
 
 cmake .                                                \
-  -DCMAKE_INSTALL_PREFIX=${LUA_UE4_PREFIX}/android     \
+  -DCMAKE_INSTALL_PREFIX=${LUA_UE4_PREFIX}             \
   -DCMAKE_TOOLCHAIN_FILE=android.toolchain.cmake       \
   -DANDROID_NDK="${NDKROOT}"                           \
   -DCMAKE_BUILD_TYPE=Release                           \

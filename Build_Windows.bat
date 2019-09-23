@@ -33,7 +33,6 @@ if not exist "%POWERSHELL_7ZIP%" (
     powershell -Command Install-Module -Name 7Zip4Powershell -Force
 )
 
-
 powershell -Command Expand-7Zip %LUA_UE4_TAR_GZ% .
 powershell -Command Expand-7Zip %LUA_UE4_TAR% .
 
@@ -42,20 +41,19 @@ move %LUA_UE4_DIR%\Makefile .
 rd /s /q %LUA_UE4_DIR%
 
 @REM change source
-cd src
-powershell -Command "(Get-Content 'luaconf.h') -replace ('define LUA_IDSIZE','define LUA_IDSIZE    256  // ')| Set-Content luaconf.h"
-
-cd ..
+pushd src
+    powershell -Command "(Get-Content 'luaconf.h') -replace ('define LUA_IDSIZE','define LUA_IDSIZE    256  // ')| Set-Content luaconf.h"
+popd
 
 @REM build lua-ue4 on windows
 rd %LUA_UE4_PREFIX%
 mkdir %LUA_UE4_PREFIX%
 
-cmake -DCMAKE_INSTALL_PREFIX=%LUA_UE4_PREFIX%/windows . -G "Visual Studio 15 2017 Win64"
+cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="%LUA_UE4_PREFIX%" .
+
 set VS2017DEVCMD=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\devenv.com
 if exist "%VS2017DEVCMD%" (
-    "%VS2017DEVCMD%" ALL_BUILD.vcxproj /rebuild "Release|x64"  
-    
+    "%VS2017DEVCMD%" ALL_BUILD.vcxproj /rebuild "Release|x64"
 ) else (
     echo "error: no exist %VS2017DEVCMD%"
     exit

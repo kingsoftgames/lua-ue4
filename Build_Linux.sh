@@ -44,5 +44,5 @@ pushd "${LUA_UE4_DIR}"
   patch -Np1 -i ../lua-5.3.5-shared_library-1.patch
 
   make linux CC="${CC}" MYCFLAGS="${MYCFLAGS}" MYLDFLAGS="${MYLDFLAGS}"
-  make install INSTALL_TOP="${LUA_UE4_PREFIX}/linux"
+  make install INSTALL_TOP="${LUA_UE4_PREFIX}"
 popd
