@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 if [[ -z "${LUA_UE4_VERSION}" ]]; then
   echo "LUA_UE4_VERSION is not set, exit."
   exit 1
@@ -18,28 +20,41 @@ readonly LUA_UE4_URL=http://www.lua.org/ftp/lua-${LUA_UE4_VERSION}.tar.gz
 readonly LUA_UE4_DIR=lua-${LUA_UE4_VERSION}
 readonly LUA_UE4_TAR=${LUA_UE4_DIR}.tar.gz
 
+wget -q -O ${LUA_UE4_TAR} ${LUA_UE4_URL}
+
 function change_source {
   sed -i 's:define LUA_IDSIZE:define LUA_IDSIZE    256  // :' luaconf.h
 }
 
-wget -q -O ${LUA_UE4_TAR} ${LUA_UE4_URL}
-tar zxf ${LUA_UE4_TAR}
-mv ./${LUA_UE4_DIR}/* .
-rm -rf ${LUA_UE4_DIR}
+function build_android {
+  MYARCH=$1
+  MYABI=$1
 
-pushd src
-  change_source
-popd
+  tar zxf ${LUA_UE4_TAR}
 
-rm -rf ${LUA_UE4_PREFIX}
-mkdir -p ${LUA_UE4_PREFIX}
+  mkdir -p "${LUA_UE4_PREFIX}/${MYARCH}"
 
-cmake .                                                \
-  -DCMAKE_INSTALL_PREFIX=${LUA_UE4_PREFIX}             \
-  -DCMAKE_TOOLCHAIN_FILE=android.toolchain.cmake       \
-  -DANDROID_NDK="${NDKROOT}"                           \
-  -DCMAKE_BUILD_TYPE=Release                           \
-  -DANDROID_ABI="arm64-v8a"                            \
-  -DANDROID_NATIVE_API_LEVEL="android-24"
-make
-make install
+  pushd ${LUA_UE4_DIR}/src
+    change_source
+  popd
+
+  cp CMakeLists.txt ./${LUA_UE4_DIR}
+  
+  pushd ${LUA_UE4_DIR}
+    cmake .                                                \
+      -DCMAKE_INSTALL_PREFIX="${LUA_UE4_PREFIX}/${MYARCH}" \
+      -DCMAKE_TOOLCHAIN_FILE=../android.toolchain.cmake    \
+      -DANDROID_NDK="${NDKROOT}"                           \
+      -DCMAKE_BUILD_TYPE=Release                           \
+      -DANDROID_ABI="${MYABI}"                             \
+      -DANDROID_NATIVE_API_LEVEL="android-24"
+    make
+    make install
+    objdump -h "${LUA_UE4_PREFIX}/${MYARCH}/lib/liblua.a" | head -n 25
+  popd
+}
+
+build_android armeabi-v7a
+
+rm -rfv ${LUA_UE4_DIR}
+build_android arm64-v8a
